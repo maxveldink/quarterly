@@ -1,0 +1,17 @@
+[package]
+name = "quarterly"
+version = "0.1.0"
+edition = "2021"
+authors = ["Max VelDink <maxveldink@gmail.com>"]
+rust-version = "1.74.1"
+
+readme = "README.md"
+description = "Rust crate containing types for handling calendar quarters."
+repository = "https://github.com/maxveldink/quarterly.git"
+
+keywords = ["quarters", "calendar", "fiscal", "financial"]
+categories = ["date-and-time", "finance", "data-structures"]
+
+license = "CDDL-1.0"
+
+[dependencies]

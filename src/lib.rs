@@ -16,7 +16,7 @@ impl FromStr for QuarterNumber {
     type Err = ParseQuarterError;
 
     /// ```
-    /// # use quarterly::{QuarterNumber, ParseQuarterError};
+    /// # use quarterly::*;
     /// assert_eq!("Q1".parse::<QuarterNumber>(), Ok(QuarterNumber::Q1));
     /// assert_eq!("q1".parse::<QuarterNumber>(), Ok(QuarterNumber::Q1));
     /// assert_eq!("banana".parse::<QuarterNumber>(), Err(ParseQuarterError));
@@ -36,7 +36,7 @@ impl TryFrom<u8> for QuarterNumber {
     type Error = ParseQuarterError;
 
     /// ```
-    /// # use quarterly::{QuarterNumber, ParseQuarterError};
+    /// # use quarterly::*;
     /// assert_eq!(QuarterNumber::try_from(1), Ok(QuarterNumber::Q1));
     /// assert_eq!(QuarterNumber::try_from(2), Ok(QuarterNumber::Q2));
     /// assert_eq!(QuarterNumber::try_from(5), Err(ParseQuarterError));
@@ -54,15 +54,56 @@ impl TryFrom<u8> for QuarterNumber {
 
 #[derive(Debug, PartialEq)]
 pub struct Quarter {
-    pub year: u16,
     pub quarter_number: QuarterNumber,
+    pub year: u16,
+}
+
+impl Quarter {
+    /// ```
+    /// # use quarterly::*;
+    /// assert_eq!(Quarter::new(QuarterNumber::Q1, 2023), Quarter { quarter_number: QuarterNumber::Q1, year: 2023 })
+    /// ```
+    pub fn new(quarter_number: QuarterNumber, year: u16) -> Self {
+        Quarter {
+            quarter_number,
+            year,
+        }
+    }
+
+    /// Determines next calendar quarter, handling year wrapping
+    ///
+    /// ```
+    /// # use quarterly::*;
+    /// assert_eq!(Quarter::new(QuarterNumber::Q1, 2023).next_quarter(), Quarter::new(QuarterNumber::Q2, 2023));
+    /// assert_eq!(Quarter::new(QuarterNumber::Q4, 2023).next_quarter(), Quarter::new(QuarterNumber::Q1, 2024));
+    /// ```
+    pub fn next_quarter(&self) -> Self {
+        match self.quarter_number {
+            QuarterNumber::Q1 => Quarter {
+                year: self.year,
+                quarter_number: QuarterNumber::Q2,
+            },
+            QuarterNumber::Q2 => Quarter {
+                year: self.year,
+                quarter_number: QuarterNumber::Q3,
+            },
+            QuarterNumber::Q3 => Quarter {
+                year: self.year,
+                quarter_number: QuarterNumber::Q4,
+            },
+            QuarterNumber::Q4 => Quarter {
+                year: self.year + 1,
+                quarter_number: QuarterNumber::Q1,
+            },
+        }
+    }
 }
 
 impl FromStr for Quarter {
     type Err = ParseQuarterError;
 
     /// ```
-    /// # use quarterly::{QuarterNumber, Quarter, ParseQuarterError};
+    /// # use quarterly::*;
     /// assert_eq!("Q2 2023".parse::<Quarter>(), Ok(Quarter { year: 2023, quarter_number: QuarterNumber::Q2 } ));
     /// assert_eq!("Q2".parse::<Quarter>(), Err(ParseQuarterError));
     /// ```
